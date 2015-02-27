@@ -1,16 +1,24 @@
-
-board = "- - - - - - - - -".split()
+board = [['o', 'o', 'o','x', 'o','x', 'o','x', 'o'],
+      ['o', 'o', '-','x', '-','x', 'o','x', 'o'],
+      ['o', '-', 'o','x', '-','x', 'o','x', 'x'],
+      ['o', 'o', '-','x', '-','x', 'x','x', '-'],
+      ['o', 'o', '-','x', '-','x', 'o','x', 'o'],
+      ['-', 'o', 'o','x', '-','x', 'o','x', 'o'],
+      ['o', 'o', '-','x', '-','x', 'o','x', 'o'],
+      ['o', 'o', '-','x', '-','x', 'o','x', 'o'],
+      ['o', 'o', '-','x', '-','x', 'o','x', 'o']
+      ]
+#board = [['-', 'x', '-', 'x', 'x', 'o', 'o', '-', 'o'], ['o', 'x', 'x', 'x', 'o', 'x', '-', 'x', 'x'], ['o', 'x', 'o', 'x', 'x', 'o', 'x', '-', 'o'], ['x', 'o', 'x', 'o', 'x', 'x', 'o', 'o', 'o'], ['o', 'o', 'o', 'x', 'x', 'o', 'x', 'o', 'x'], ['o', 'x', 'o', 'o', 'x', 'x', 'x', 'x', 'x'], ['x', 'x', 'x', 'o', 'o', 'o', 'x', '-', 'o'], ['o', '-', '-', 'x', 'o', 'o', '-', 'x', '-'], ['o', 'x', '-', 'o', 'o', 'o', 'o', 'x', '-']]
 import sys
 import random
-import getopt
 
 moves = (0,1,2,3,4,5,6,7,8)
 X_token = -1
 Open_token = 0
 O_token = 1
-rtokens = {-1: 'X', 0: '-', 1:'O'}
-tokens = {'X': -1, 'O': 1, '-': 0}
-MARKERS = ['-', 'O', 'X']
+rtokens = {-1: 'x', 0: '-', 1:'o'}
+tokens = {'x': -1, 'o': 1, '-': 0}
+MARKERS = ['-', 'o', 'x']
 END_PHRASE = ('draw', 'win', 'loss')
 
 HUMAN = 1
@@ -20,16 +28,16 @@ COMPUTER = 0
 WINPOS = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
 final_board={0:{},1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{}}
 
-board = [1, 1, 1,-1, 1,-1, 1,-1, 1,
-         1, 1, 0,-1, 0,-1, 1,-1, 1,
-	 1, 0, 1,-1, 0,-1, 1,-1, -1,
-	 1, 1, 0,-1, 0,-1, -1,-1, 0,
-	 1, 1, 0,-1, 0,-1, 1,-1, 1,
-	 0, 1, 1,-1, 0,-1, 1,-1, 1,
-	 1, 1, 0,-1, 0,-1, 1,-1, 1,
-	 1, 1, 0,-1, 0,-1, 1,-1, 1,
-	 1, 1, 0,-1, 0,-1, 1,-1, 1,
-	 ]
+#board = [1, 1, 1,-1, 1,-1, 1,-1, 1,
+#        1, 1, 0,-1, 0,-1, 1,-1, 1,
+#	 1, 0, 1,-1, 0,-1, 1,-1, -1,
+#	 1, 1, 0,-1, 0,-1, -1,-1, 0,
+#	 1, 1, 0,-1, 0,-1, 1,-1, 1,
+#	 0, 1, 1,-1, 0,-1, 1,-1, 1,
+#	 1, 1, 0,-1, 0,-1, 1,-1, 1,
+#	 1, 1, 0,-1, 0,-1, 1,-1, 1,
+#	 1, 1, 0,-1, 0,-1, 1,-1, 1,
+#	 ]
 #Json Schema for the structure for the final_board
 #final_board = {
 #               0(This represents the small board number) : { 0:'',1:'',2:''......8:'',win:('o' for o and 'x' for x and '-' for none)  This contains the info about that small board}
@@ -47,10 +55,10 @@ def config_win(small_config):
     for each in WINPOS:
 	sum = tokens[small_config[each[0]]] + tokens[small_config[each[1]]] + tokens[small_config[each[2]]]
 	if sum == 3:
-	    small_config['win'] = 'O'
+	    small_config['win'] = 'o'
 	    return 
 	if sum == -3:
-	    small_config['win'] = 'X'
+	    small_config['win'] = 'x'
 	    return 
 	else:
 	    small_config['win'] = '-'
@@ -91,10 +99,12 @@ def evaluate(final_board,player):
 			 sum -= 1;
 	if(sum>0):
 		heuristic = 1000*pow(10,sum)
-	else:
+	elif (sum<0):
 		sum = -sum;
 		heuristic = -1000*pow(10,sum)
-
+	else:
+		heuristic = 1
+	return heuristic
 
 
 
@@ -109,7 +119,8 @@ def minmax(board,small_board,player, next_player, alpha, beta,depth):
 		if final_board[small_board][move] == rtokens[Open_token]:
 			final_board[small_board][move] = rtokens[player]
  		        if(depth==4):
-			        val = evaluate(final_board,player,next_player)
+#				val = evaluate(final_board,player,next_player)
+				val = 1
 				return val
 		        else:
 			        val = minmax(final_board,move,next_player, player, alpha, beta,depth+1)
@@ -169,6 +180,7 @@ def determine(final_board,small_board):
 
 def ret_val(final_board,small_board):
 	best_val = -2;
+	print "begin again!"
 	my_moves = []
 	for move in moves:
 	        if final_board[small_board][move] == rtokens[Open_token]:
@@ -176,25 +188,30 @@ def ret_val(final_board,small_board):
 			print move
 			final_board[small_board][move] = rtokens[O_token]
 			val = minmax(final_board,small_board,X_token,O_token,-2,2,0)
+			print "Val: ", val
+			print final_board[small_board]
+			print move
 	                final_board[small_board][move] = rtokens[Open_token]
 			if val > best_val:
 			        best_val= val
 			        my_moves = [(small_board,move)]
 			elif val == best_val:
-				my_moves.append(move)
+				my_moves.append((small_board, move))
+	print "My moves: ", my_moves
 	return (best_val,my_moves[0])
 
 i = 0
 j = 0
 for x in board:
-    final_board[i][j] = rtokens[x]
-    j = j + 1
-    if(j == 9):
-	config_win(final_board[i])
-        i = i + 1
+	for y in x:
+		final_board[i][j] = y
+		j = j+1
+		if(j == 9):
+			config_win(final_board[i])
+	i = i+1
 	if (i == 9):
 		break
-    j = j % 9
+	j = j % 9
 print  final_board
 final = determine(final_board,0)
 print "I pick ", final
