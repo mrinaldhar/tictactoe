@@ -1,3 +1,4 @@
+
 board = "- - - - - - - - -".split()
 def nboard(board):
 	temp = []
@@ -45,8 +46,7 @@ def evalUtility(board, player):
 		 	return -1
 	else:
 		return 0
-
-
+        return 0
 
 newBoard['board'][1][2] = 'x'
 newBoard['board'][1][1] = 'x'
