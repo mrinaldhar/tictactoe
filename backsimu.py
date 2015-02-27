@@ -109,14 +109,14 @@ def minmax(board,small_board,player, next_player, alpha, beta,depth):
 			retval = beta
 	return retval
 	
-	def choose_board(final_board):   #This function will contain the intelligence for choosing the small board in case of free choice
-		for small_board in final_board:
-			if (final_board[small_board]['win']!='-'):
-				continue;
-			for i in final_board[small_board]:
-				if (final_board[small_board][i]=='-'):
-					small_boards.append(small_board)
-		return small_boards
+def choose_board(final_board):   #This function will contain the intelligence for choosing the small board in case of free choice
+	for small_board in final_board:
+		if (final_board[small_board]['win']!='-'):
+			continue;
+		for i in final_board[small_board]:
+			if (final_board[small_board][i]=='-'):
+				small_boards.append(small_board)
+	return small_boards
 
 def determine(final_board,small_board):
 	if (small_board == 0):
