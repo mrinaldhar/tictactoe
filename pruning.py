@@ -1,3 +1,4 @@
+
 board = "- - - - - - - - -".split()
 import sys
 import random
@@ -17,9 +18,18 @@ COMPUTER = 0
 
 ##
 WINPOS = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
-final_board={}
+final_board={0:{},1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{}}
 
-
+board = [1, 1, 1,-1, 0,-1, 1,-1, 1,
+         1, 1, 1,-1, 0,-1, 1,-1, 1,
+	 1, 1, 1,-1, 1,-1, 1,-1, -1,
+	 1, 1, 0,-1, 0,-1, -1,-1, 0,
+	 1, 1, 0,-1, 0,-1, 1,-1, 1,
+	 0, 1, 1,-1, 0,-1, 1,-1, 1,
+	 1, 1, 0,-1, 0,-1, 1,-1, 1,
+	 1, 1, 0,-1, 0,-1, 1,-1, 1,
+	 1, 1, 0,-1, 0,-1, 1,-1, 1,
+	 ]
 #Json Schema for the structure for the final_board
 #final_board = {
 #               0(This represents the small board number) : { 0:'',1:'',2:''......8:'',win:('o' for o and 'x' for x and '-' for none)  This contains the info about that small board}
@@ -33,6 +43,17 @@ def winner(board):
 		if sum == 3 or sum == -3:
 			return tokens[board[each[0]]]
 	return 0
+def config_win(small_config):
+    for each in WINPOS:
+	sum = tokens[small_config[each[0]]] + tokens[small_config[each[1]]] + tokens[small_config[each[2]]]
+	if sum == 3:
+	    small_config['win'] = 'O'
+	    return 
+	if sum == -3:
+	    small_config['win'] = 'X'
+	    return 
+	else:
+	    small_config['win'] = '-'
 
 def availMoves(board):
 	temp = []
@@ -50,22 +71,48 @@ def move_left(board):
 		if board[each] == '-':
 			return True
 	return False
-board[0] = 'X'
-board[2] = 'O'
-board[1] = 'X'
 small_board = 0;
-def minmax(board,small_board,player, next_player, alpha, beta):
+
+def evaluate(final_board,player):
+        for each in WINPOS:
+	         if(final_board[each[0]]['win'] == rtokens[player]):
+			 sum = 1;
+		 if(final_board[each[1]]['win'] == rtokens[player]):
+			 sum += 1;
+		 if(final_board[each[2]]['win'] == rtokens[player]):
+			 sum += 1;
+	         if((final_board[each[1]]['win'] != rtokens[player]) or (final_board[each[0]]['win'] != rtokens[player]) or (final_board[each[2]]['win'] != rtokens[player])):
+			 sum = 0; #As their is no chance of winning in this position
+                 if(final_board[each[0]]['win'] == rtokens[next_player]):
+			 sum -= 1;
+	         if(final_board[each[1]]['win'] == rtokens[next_player]):
+			 sum -= 1;
+		 if(final_board[each[2]]['win'] == rtokens[next_player]):
+			 sum -= 1;
+	if(sum>0):
+		heuristic = 1000*pow(10,sum)
+	else:
+		sum = -sum;
+		heuristic = -1000*pow(10,sum)
+
+
+
+
+def minmax(board,small_board,player, next_player, alpha, beta,depth):
 	winnr = winner(final_board)
 	if winnr!=Open_token:
 		return winnr
-	elif not move_left(board):
+	elif not move_left(final_board):
 		return 0
 	if small_board!=10:
 	    for move in moves:
 		if final_board[small_board][move] == rtokens[Open_token]:
 			final_board[small_board][move] = rtokens[player]
-			val = minmax(final_board,small_board,next_player, player, alpha, beta)
-			final_board[small_board][move] = rtokens[Open_token]
+ 		        if(depth==4):
+			        val = evaluate(final_board,player,next_player)
+		        else:
+			        val = minmax(final_board,move,next_player, player, alpha, beta,depth+1)
+			        final_board[small_board][move] = rtokens[Open_token]
 			if player == O_token:  # Maximizing player
 				if val > alpha:
 					alpha = val
@@ -88,17 +135,30 @@ def determine(final_board,small_board):
 	    my_moves = []
 	    for move in moves:
 	    	    if final_board[small_board][move] == rtokens[Open_token]:
+			    print "i am here "
+			    print move
 		            final_board[small_board][move] = rtokens[O_token]
 			    val = minmax(final_board,small_board,X_token, O_token, -2, 2)
 			    final_board[small_board][move] = rtokens[Open_token]
-			    print move, ' causes ', CAUSES[val]
+			   #print move, ' causes ', CAUSES[val]
 			    if val> best_val:
 				    best_val = val
 				    my_moves = [move]
 			    elif val == best_val:
 				    my_moves.append(move)
 	return random.choice(my_moves)
-print board
+i = 0
+j = 0
+for x in board:
+    final_board[i][j] = rtokens[x]
+    j = j + 1
+    if(j == 9):
+	config_win(final_board[i])
+        i = i + 1
+	if (i == 9):
+		break
+    j = j % 9
+print  final_board
 #small_board = 10 represents the free choice to play at any board
-final = determine(board,small_board)
+final = determine(final_board,2)
 print "I pick ", final
