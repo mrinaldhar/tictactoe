@@ -180,7 +180,24 @@ class Player1:
 
 	
 	def move(self,temp_board,temp_block,old_move,flag):
-		global CAUSES, moves, X_token, Open_token, O_token, rtokens, tokens, MARKERS, END_PHRASE, HUMAN, COMPUTER, WINPOS, final_board
+		moves = (0,1,2,3,4,5,6,7,8)
+		X_token = -1
+		Open_token = 0
+		O_token = 1
+		rtokens = {-1: 'x', 0: '-', 1:'o'}
+		tokens = {'x': -1, 'o': 1, '-': 0}
+		MARKERS = ['-', 'o', 'x']
+		END_PHRASE = ('draw', 'win', 'loss')
+
+		HUMAN = 1
+		COMPUTER = 0
+
+##
+		WINPOS = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
+		final_board={0:{},1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{}}
+
+		small_board = 0;
+		CAUSES = ('draw', 'win', 'loss')
 		i = 0
 		j = 0
 		for x in temp_board:
