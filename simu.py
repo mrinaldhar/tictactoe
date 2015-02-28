@@ -88,6 +88,7 @@ def move_left(board):
 def eval_small(small_board,player,next_player):
 	sum = 0
 	oppo_sum = 0
+	heuristic = 0
 	for each in WINPOS:
 	        for i in each:
 	            if(small_board[i] == rtokens[player]):
@@ -99,6 +100,8 @@ def eval_small(small_board,player,next_player):
 	return heuristic
 
 def evaluate(final_board,player,next_player):
+	heuristic = 0
+	sum = 0
         for each in WINPOS:
 	         oppo_sum = 0
 	         if(final_board[each[0]]['win'] == rtokens[player]):
@@ -118,7 +121,7 @@ def evaluate(final_board,player,next_player):
 		 heuristic += 1000*pow(10,sum)
 		 heuristic -= 1000*pow(10,-oppo_sum)
 	for small_board in final_board:
-	        heuristic += eval_small(final_board[small_board])
+	        heuristic += eval_small(final_board[small_board], player, next_player)
 	return heuristic
 
 
@@ -168,6 +171,9 @@ def minmax(final_board,small_board,player, next_player, alpha, beta,depth,last_m
 		for move in moves:
 		        print move[1]
 			print 'depth ', depth
+			print 'BOARD'
+			print small_board
+			print
 			if final_board[small_board][move[1]] == rtokens[Open_token]:
 		                temp_dict = {}
 				for i in final_board:
@@ -177,7 +183,7 @@ def minmax(final_board,small_board,player, next_player, alpha, beta,depth,last_m
 					val = evaluate(final_board,player,next_player)
 					return val
 				else:
-					val = minmax(final_board,move,next_player, player, alpha, beta,depth+1,move)
+					val = minmax(final_board,small_board,next_player, player, alpha, beta,depth+1,move)
 					final_board[small_board][move[1]] = rtokens[Open_token]
 				if player == O_token:  # Maximizing player
 					if val > alpha:
@@ -207,6 +213,7 @@ def choose_board(final_board):   #This function will contain the intelligence fo
 	return small_boards
 
 def determine(final_board,small_board):
+	my_moves = []
 	if (small_board == -1):
 		small_boards = [0,1,2,3,4,5,6,7,8]
 	elif(small_board == 0):
@@ -238,6 +245,7 @@ def determine(final_board,small_board):
 			best = temp[0]
 			my_moves = [temp[1]]
 		final_board = temp_dict
+	print "LIST SIZE:", len(my_moves)
 	return my_moves[0]
 
 
