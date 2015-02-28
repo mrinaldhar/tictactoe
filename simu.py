@@ -180,7 +180,7 @@ def minmax(final_board,small_board,player, next_player, alpha, beta,depth,last_m
 				for i in final_board:
 				        temp_dict.update({i:final_board[i]})
 				final_board[small_board][move[1]] = rtokens[player]
-				if(depth==4):
+				if(depth==5):
 					val = evaluate(final_board,player,next_player)
 					return val
 				else:
@@ -277,7 +277,10 @@ def ret_val(final_board,small_board):
 			print "Val: ", val
 			print final_board[small_board]
 			print move
+			print "OLD", final_board[small_board][move]
 			final_board[small_board][move] = rtokens[Open_token]
+			print "NEW", final_board[small_board][move]
+
 			if val > best_val:
 				best_val= val
 				my_moves = [(small_board,move)]
