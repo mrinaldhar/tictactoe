@@ -75,45 +75,9 @@ def move_left(board):
 		if board[each] == '-':
 			return True
 	return False
-
-def eval_small(small_board,player,next_player):
-	sum = 0
-	oppo_sum = 0
+def evaluate(final_board,player):
 	for each in WINPOS:
-	        for i in each:
-	            if(small_board[i] == rtokens[player]):
-			    sum += 1
-	            elif(small_board[i] == rtokens[next_player]):
-                            oppo_sum += 1
-	        heuristic += 10*pow(10,sum)
-	        heuristic -= 10*pow(10,oppo_sum)
-	return heuristic
-
-def evaluate(final_board,player,next_player):
-        for each in WINPOS:
-	         oppo_sum = 0
-	         if(final_board[each[0]]['win'] == rtokens[player]):
-			 sum = 1;
-		 if(final_board[each[1]]['win'] == rtokens[player]):
-			 sum += 1;
-		 if(final_board[each[2]]['win'] == rtokens[player]):
-			 sum += 1;
-	         if((final_board[each[1]]['win'] == rtokens[next_player]) or (final_board[each[0]]['win'] != rtokens[next_player]) or (final_board[each[2]]['win'] != rtokens[next_player])):
-			 sum = 0; #As their is no chance of winning in this position
-                 if(final_board[each[0]]['win'] == rtokens[next_player]):
-			 oppo_sum -= 1;
-	         if(final_board[each[1]]['win'] == rtokens[next_player]):
-			 oppo_sum -= 1;
-		 if(final_board[each[2]]['win'] == rtokens[next_player]):
-			 oppo_sum -= 1;
-		 heuristic += 1000*pow(10,sum)
-		 heuristic -= 1000*pow(10,-oppo_sum)
-	for small_board in final_board:
-	        heuristic += eval_small(final_board[small_board])
-	return heuristic
-
-
-	
+		
 
 def minmax(final_board,small_board,player, next_player, alpha, beta,depth):
 	winnr = winner(final_board)
@@ -191,13 +155,8 @@ def ret_val(final_board,small_board):
 	best_val = -2;
 	print "begin again!"
 	my_moves = []
-	temp_dict = {}
-	for i in final_board:
-	        temp_dict.update({i:final_board[i]})
 	for move in moves:
 		if final_board[small_board][move] == rtokens[Open_token]:
-		        for i in final_board:
-			        config_win(final_board[i])
 			print "i am here"
 			print move
 			final_board[small_board][move] = rtokens[O_token]
@@ -212,7 +171,6 @@ def ret_val(final_board,small_board):
 			elif val == best_val:
 				my_moves.append((small_board, move))
 	print "My moves: ", my_moves
-	final_board = temp_dict
 	return (best_val,my_moves[0])
 
 
@@ -224,7 +182,7 @@ class Player1:
 	def checkers(self, msg):
 		print msg
 
-
+	
 	def move(self,temp_board,temp_block,old_move,flag):
 		moves = (0,1,2,3,4,5,6,7,8)
 		X_token = -1
