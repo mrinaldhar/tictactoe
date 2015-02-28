@@ -151,6 +151,7 @@ def valid_moves(final_board,last_move):
  		for i in final_board[small_board]:
 			if i!='win' and final_board[small_board][i] == rtokens[Open_token]:
 				valid_moves.append((small_board,i))
+	print "SEE THIS:::", valid_moves
  	return valid_moves
 
 def minmax(final_board,small_board,player, next_player, alpha, beta,depth,last_move):
@@ -232,15 +233,17 @@ def determine(final_board,small_board):
 		for i in small_boards:
 			if(final_board[i]['win']!=rtokens[Open_token]):
 				small_boards.remove(i)
-	print small_boards
 	if (len(small_boards)==0):
 		small_boards = choose_board(final_board)
 	best = -2
+	print "SMALL_BOARDS::", small_boards
+
 	for small_board in small_boards:
 	        temp_dict = {}
 		for i in final_board:
 		        temp_dict.update({i:final_board[i]})
 		temp = ret_val(final_board,small_board)
+		print "SOMETEMP::", temp
 		if temp[0]>best:
 			best = temp[0]
 			my_moves = [temp[1]]
@@ -291,27 +294,18 @@ class Player1:
 		pass
 
 	def move(self,temp_board,temp_block,old_move,flag):
+		if flag == 'x':
+			O_token = -1
+			X_token = 1
+		else:
+			O_token = 1
+			X_token = -1
 		if(old_move == (-1,-1)):
 			return (4,4)
 		print 'This is the temp_board'
 		print temp_board
-		moves = (0,1,2,3,4,5,6,7,8)
-		X_token = -1
-		Open_token = 0
-		O_token = 1
-		rtokens = {-1: 'x', 0: '-', 1:'o'}
-		tokens = {'x': -1, 'o': 1, '-': 0}
-		MARKERS = ['-', 'o', 'x']
-		END_PHRASE = ('draw', 'win', 'loss')
-
-		HUMAN = 1
-		COMPUTER = 0
-
-##
-		WINPOS = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
 		final_board={0:{},1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{}}
 		small_board = 0;
-		CAUSES = ('draw', 'win', 'loss')
 		i = 0
 		j = 0
 		for x in xrange(0,9):
@@ -335,6 +329,8 @@ class Player1:
 	        y = final[1]
 	        row = 3*(x/3) + (y/3)
 	        column = 3*(x%3) + (y%3)
+		print "MY ANS::"
+		print (row, column)
 	   	return (row,column)
 	   	
 class Player2:
@@ -425,6 +421,7 @@ def get_empty_out_of(gameb, blal,block_stat):
 
 	# If all the possible blocks are full, you can move anywhere
 	if cells == []:
+		print "MOVE ANYWHERE" #debug
 		for i in range(9):
 			for j in range(9):
                                 no = (i/3)*3
@@ -439,6 +436,10 @@ def check_valid_move(game_board,block_stat, current_move, old_move):
 
 	# first we need to check whether current_move is tuple of not
 	# old_move is guaranteed to be correct
+	print "CURR::"
+	print current_move
+	print "OLD::"
+	print old_move
 	if type(current_move) is not tuple:
 		return False
 	
@@ -459,7 +460,6 @@ def check_valid_move(game_board,block_stat, current_move, old_move):
 
 
 	for_corner = [0,2,3,5,6,8]
-
 	#List of permitted blocks, based on old move.
 	blocks_allowed  = []
 
@@ -512,7 +512,7 @@ def check_valid_move(game_board,block_stat, current_move, old_move):
         
         # We get all the empty cells in allowed blocks. If they're all full, we get all the empty cells in the entire board.
         cells = get_empty_out_of(game_board, blocks_allowed,block_stat)
-
+        print cells
 	#Checks if you made a valid move. 
         if current_move in cells:
      	    return True
@@ -791,14 +791,17 @@ if __name__ == '__main__':
 	elif option == '3':
 		obj1 = Manual_player()
 		obj2 = Manual_player()
+
+	# O_token = 1
+	# simulate(obj2, obj1)
         
         # Deciding player1 / player2 after a coin toss
         # However, in the tournament, each player will get a chance to go 1st. 
         num = random.uniform(0,1)
         if num > 0.5:
-		O_token = 1
+		# O_token = 1
 		simulate(obj2, obj1)
 	else:
-		O_token = -1
+		# O_token = -1
 		simulate(obj1, obj2)
 
