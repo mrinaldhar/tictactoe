@@ -119,7 +119,9 @@ def minmax(board,small_board,player, next_player, alpha, beta,depth):
 		return small_boards
 
 def determine(final_board,small_board):
-	if (small_board == 0):
+	if (small_board == -1):
+		small_boards = [0,1,2,3,4,5,6,7,8]
+	elif(small_board == 0):
 		small_boards = [0,1,3]
 	elif (small_board == 2):
 		small_boards = [1,2,5]
@@ -130,7 +132,7 @@ def determine(final_board,small_board):
 	else:
 		small_boards = [small_board]
 	print small_boards
-	
+
 	if (len(small_boards) > 0):
 		for i in small_boards:
 			if(final_board[i]['win']!='-'):
@@ -194,9 +196,19 @@ class Player1:
 				break
 			j = j % 9
 		print  final_board
-	  	final = determine(final_board,old_move[0])
+		print old_move
+		x = old_move[1]
+		y = old_move[0]
+		small_board = 3*(y%3) + (x%3)
+		print 'small_board'
+		print small_board
+	  	final = determine(final_board,small_board)
 	   	print "I pick ", final
-	   	return final
+	        x = final[0]
+	        y = final[1]
+	        row = 3*(x/3) + (y/3)
+	        column = 3*(x%3) + (y%3)
+	   	return (row,column)
 
 class Player2:
 	
@@ -672,7 +684,8 @@ if __name__ == '__main__':
 
         #########
         # deciding player1 / player2 after a coin toss
-        num = random.uniform(0,1)
+	#num = random.uniform(0,1)
+	num = 0.3
 	interchange = 0
         if num > 0.5:
 		interchange = 1
@@ -680,4 +693,4 @@ if __name__ == '__main__':
 	else:
 		simulate(obj1, obj2)
 		
-	
+
