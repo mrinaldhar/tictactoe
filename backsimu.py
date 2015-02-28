@@ -41,11 +41,11 @@ small_board = 0;
 CAUSES = ('draw', 'win', 'loss')
 
 
-def winner(board):
+def winner(final_board):
 	for each in WINPOS:
-		sum = tokens[final_board[each[0]]['win']]+tokens[final_board[each[1]]['win']]+tokens[board[each[2]]['win']]
+		sum = tokens[final_board[each[0]]['win']]+tokens[final_board[each[1]]['win']]+tokens[final_board[each[2]]['win']]
 		if sum == 3 or sum == -3:
-			return tokens[board[each[0]]]
+			return tokens[final_board[each[0]]]
 		return 0
 
 def config_win(small_config):
@@ -76,7 +76,7 @@ def move_left(board):
 			return True
 	return False
 
-def minmax(board,small_board,player, next_player, alpha, beta,depth):
+def minmax(final_board,small_board,player, next_player, alpha, beta,depth):
 	winnr = winner(final_board)
 	if winnr!=Open_token:
 		return winnr
