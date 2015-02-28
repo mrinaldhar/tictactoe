@@ -22,7 +22,7 @@ final_board={0:{},1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{}}
 
 board = [1, 1, 1,-1, 0,-1, 1,-1, 1,
          1, 1, 1,-1, 0,-1, 1,-1, 1,
-	 1, 1, 1,-1, 1,-1, 1,-1, -1,
+	 1, 0, 1,-1, 0,-1, 1,-1, -1,
 	 1, 1, 0,-1, 0,-1, -1,-1, 0,
 	 1, 1, 0,-1, 0,-1, 1,-1, 1,
 	 0, 1, 1,-1, 0,-1, 1,-1, 1,
@@ -110,6 +110,7 @@ def minmax(board,small_board,player, next_player, alpha, beta,depth):
 			final_board[small_board][move] = rtokens[player]
  		        if(depth==4):
 			        val = evaluate(final_board,player,next_player)
+				return val
 		        else:
 			        val = minmax(final_board,move,next_player, player, alpha, beta,depth+1)
 			        final_board[small_board][move] = rtokens[Open_token]
@@ -138,7 +139,7 @@ def determine(final_board,small_board):
 			    print "i am here "
 			    print move
 		            final_board[small_board][move] = rtokens[O_token]
-			    val = minmax(final_board,small_board,X_token, O_token, -2, 2)
+			    val = minmax(final_board,small_board,X_token, O_token, -2, 2,0)
 			    final_board[small_board][move] = rtokens[Open_token]
 			   #print move, ' causes ', CAUSES[val]
 			    if val> best_val:
@@ -146,7 +147,7 @@ def determine(final_board,small_board):
 				    my_moves = [move]
 			    elif val == best_val:
 				    my_moves.append(move)
-	return random.choice(my_moves)
+	return my_moves[0]
 i = 0
 j = 0
 for x in board:
