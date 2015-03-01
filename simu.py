@@ -44,11 +44,13 @@ CAUSES = ('draw', 'win', 'loss')
 def winner(final_board,player,next_player):
 	for each in WINPOS:
 		sum = 0
-		for i in each:
-			if(final_board[i]['win'] == rtokens[player]):
-				sum += 1
-			elif(final_board[i]['win'] == rtokens[next_player]):
-				sum -= 1
+		win_check = {rtokens[player]: 1, rtokens[next_player]: -1, '-': 0}
+		sum = win_check[final_board[each[0]]['win']] + win_check[final_board[each[1]]['win']] + win_check[final_board[each[2]]['win']]
+		# for i in each:
+		# 	if(final_board[i]['win'] == rtokens[player]):
+		# 		sum += 1
+		# 	elif(final_board[i]['win'] == rtokens[next_player]):
+		# 		sum -= 1
 		if sum == 3:
 		        return 100000
 		elif sum == -3: 
@@ -56,8 +58,6 @@ def winner(final_board,player,next_player):
 	return 0
 
 def config_win(small_config):
-#	# print 'small_config'
-#	# print small_config
 	for each in WINPOS:
 		sum = tokens[small_config[each[0]]] + tokens[small_config[each[1]]] + tokens[small_config[each[2]]]
 		if sum == 3:
@@ -74,7 +74,6 @@ def availMoves(board):
 	currBoard = board['board']
 	for x in xrange(0,3):
 		for y in xrange(0,3):
-#      	                # print 'THIS:', board['board']
 			if currBoard[x][y] == '-':
 				temp.append((x,y))
 	return temp
@@ -116,8 +115,6 @@ def evaluate(final_board,player,next_player):
 			 sum += 1;
 		 if(final_board[each[2]]['win'] == rtokens[player]):
 			 sum += 1;
-#       if((final_board[each[1]]['win'] == rtokens[next_player]) or (final_board[each[0]]['win'] != rtokens[next_player]) or (final_board[each[2]]['win'] != rtokens[next_player])):
-#			 sum = 0; #As their is no chance of winning in this position
                  if(final_board[each[0]]['win'] == rtokens[next_player]):
 			 oppo_sum -= 1;
 	         if(final_board[each[1]]['win'] == rtokens[next_player]):
@@ -161,22 +158,16 @@ def valid_moves(final_board,last_move):
  		for i in final_board[small_board]:
 			if i!='win' and final_board[small_board][i] == rtokens[Open_token]:
 				valid_moves.append((small_board,i))
-#	# print "SEE THIS:::", valid_moves
  	return valid_moves
 
 def minmax(final_board,player, next_player, alpha, beta,depth,last_move):
 	winnr = winner(final_board,next_player,player)
 	if winnr!=Open_token:
 		return winnr*100
-#	elif not move_left(final_board):
-#		return 0
 	moves = []
 	moves = valid_moves(final_board,last_move)
-	# print 'Moves'
-	# print moves
 	if 1:
 		for move in moves:
-#			# print 'depth ', depth
 			if final_board[move[0]][move[1]] == rtokens[Open_token]:
 		                temp_dict = {}
 				for i in final_board:
@@ -185,30 +176,16 @@ def minmax(final_board,player, next_player, alpha, beta,depth,last_move):
 				for i in final_board:
 					config_win(final_board[i])
 				i = 0
-				string = ''
-				while(i<depth):
-					string = string + '    '
-					i = i + 1
-				# print string + 'move: ', move
-				# print move
-				# print move
-				# print rtokens[player]
-				if(depth==3):
-					# print 'This is the val at depth 3'
+				if(depth==2):
 					if(depth%2 != 0):
 						val = evaluate(final_board,next_player,player)
 					else:
 						val = evaluate(final_board,player,next_player)
-					# print val
 				else:
 					val = minmax(final_board,next_player, player, alpha, beta,depth+1,move)
-					# print 'This is the val at initial depths'
-					# print val
-				# print "I am refreshing the array"
 				final_board[move[0]][move[1]] = rtokens[Open_token]
 				for i in final_board:
 					config_win(final_board[i])
-				# print 'alpha beta val', alpha, beta, val
 				if player == O_token:  # Maximizing player
 					if val > alpha:
 						alpha = val
@@ -250,18 +227,13 @@ def determine(final_board,small_board):
 		small_boards  = [7,8,5]
 	else:
 		small_boards = [small_board]
-	# print small_boards
-	# print final_board
-	# print "small_boards1", small_boards
 	temp_small_board = small_boards[:]
 	if (len(small_boards) > 0):
 		for i in small_boards:
-			# print i, final_board[i]['win']
 			if(final_board[i]['win']!=rtokens[Open_token]):
 				temp_small_board.remove(i)
 	small_boards = temp_small_board[:]
 	temp_list = []
-	# print "small_boards2", small_boards
 
 	if (len(small_boards) > 0):
 		for small_board in small_boards:
@@ -270,70 +242,46 @@ def determine(final_board,small_board):
 					temp_list.append(small_board)
 					break
 	small_boards = temp_list
-	# print "small_boards", small_boards
 	if (len(small_boards)==0):
 		small_boards = choose_board(final_board)
 	best = -10000000
-	# print "SMALL_BOARDS::", small_boards
 	temp_dict = {}
 	for small_board in small_boards:
 	        temp_dict = {}
 		for i in final_board:
 		        temp_dict[i] = final_board[i]
 		temp = ret_val(final_board,small_board)
-		# print "SOMETEMP::", temp
 		if temp[0]>best:
-			# print "TEMP..", temp[1]
 			best = temp[0]
 			my_moves = [temp[1]]
 		final_board = temp_dict
-	# print "LIST SIZE:", len(my_moves)
 	return my_moves[0]
 
 
 def ret_val(final_board,small_board):
 	best_val = -1000000;
-	# print "begin again!"
 	my_moves = []
 	temp_dict = {}
 	for i in final_board:
 	        temp_dict.update({i:final_board[i]})
-#	# print 'This is the temp_dict'
-#	# print temp_dict
-#	# print 'This is the final board'
-#	# print final_board
 	moves = [0,1,2,3,4,5,6,7,8]
-	# print moves
 	for move in moves:
 		if final_board[small_board][move] == rtokens[Open_token] and final_board[small_board]['win'] == rtokens[Open_token]:
 		        for i in final_board:
 			        config_win(final_board[i])
-			# print "Hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-			# print 'Move: ', small_board,move
 			final_board[small_board][move] = rtokens[O_token]
 			val = minmax(final_board,-O_token,+O_token,-1000000,1000000,1,(small_board,move))
-			# print "Val: ", val, small_board
-#			# print "O_token ", O_token
-			# print final_board[small_board]
-#			# print "OLD", final_board[small_board][move]
 			final_board[small_board][move] = rtokens[Open_token]
 			for i in final_board:
 				config_win(final_board[i])
-#			# print "NEW", final_board[small_board][move]
-#                        # print final_board
 
 			if val > best_val:
-				# print "VAL::", val
-				# print "MOVE::", move
 				best_val= val
 				my_moves = [(small_board,move)]
 			elif val == best_val:
-				# print "2VAL::", val
-				# print "2MOVE::", move
 				my_moves.append((small_board, move))
          
 			final_board = temp_dict
-	# print "LIST SIZE2:", len(my_moves)
 	return (best_val,my_moves[0])
 
 
@@ -352,8 +300,6 @@ class Player1:
 			X_token = -1
 		if(old_move == (-1,-1)):
 			return (4,4)
-		# print 'This is the temp_board'
-		# print temp_board
 		final_board={0:{},1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{}}
 		small_board = 0;
 		i = 0
@@ -368,22 +314,14 @@ class Player1:
 					count = count + 1
 	        for i in final_board:
 	                config_win(final_board[i])
-		# print  final_board
-		# print old_move
 		x = old_move[1]
 		y = old_move[0]
 		small_board = 3*(y%3) + (x%3)
-		# print 'small_board'
 	  	final = determine(final_board,small_board)
-		# print "Last move ", old_move
-		# print final_board
-	   	# print "I pick ", final
 	        x = final[0]
 	        y = final[1]
 	        row = 3*(x/3) + (y/3)
 	        column = 3*(x%3) + (y%3)
-		# print "MY ANS::"
-		# print (row, column)
 	   	return (row,column)
 	   	
 class Player2:
@@ -845,10 +783,15 @@ if __name__ == '__main__':
         # Deciding player1 / player2 after a coin toss
         # However, in the tournament, each player will get a chance to go 1st. 
         num = random.uniform(0,1)
+        flag = 0
         if num > 0.5:
-        	print "You are P2"
+        	flag = 1
 		simulate(obj2, obj1)
 	else:
-		print "You are P1"
+		flag =2
 		simulate(obj1, obj2)
+	if (flag == 1):
+		print "You are P2"
+	else:
+		print "You are P1"
 
