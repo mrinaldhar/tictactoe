@@ -49,6 +49,8 @@ def winner(final_board):
 		return 0
 
 def config_win(small_config):
+	print 'small_config'
+	print small_config
 	for each in WINPOS:
 		sum = tokens[small_config[each[0]]] + tokens[small_config[each[1]]] + tokens[small_config[each[2]]]
 		if sum == 3:
@@ -123,7 +125,12 @@ def minmax(final_board,small_board,player, next_player, alpha, beta,depth):
 		return 0
 	if small_board!=10:
 		for move in moves:
+		        if final_board[small_board][move] != rtokens[Open_token]:
+		                continue
 			if final_board[small_board][move] == rtokens[Open_token]:
+		                temp_dict = {}
+				for i in final_board:
+				        temp_dict.update({i:final_board[i]})
 				final_board[small_board][move] = rtokens[player]
 				if(depth==4):
 					val = evaluate(final_board,player,next_player)
@@ -141,6 +148,7 @@ def minmax(final_board,small_board,player, next_player, alpha, beta,depth):
 						beta = val
 					if beta <= alpha:
 						return alpha
+				final_board = temp_dict
 		if player == O_token:
 			retval = alpha
 		else:
@@ -148,12 +156,13 @@ def minmax(final_board,small_board,player, next_player, alpha, beta,depth):
 	return retval
 	
 def choose_board(final_board):   #This function will contain the intelligence for choosing the small board in case of free choice
+	small_boards = []
 	for small_board in final_board:
-		if (final_board[small_board]['win']!='-'):
-			continue;
-		for i in final_board[small_board]:
-			if (final_board[small_board][i]=='-'):
-				small_boards.append(small_board)
+	        if (final_board[small_board]['win']==rtokens[Open_token]):
+			for i in final_board[small_board]:
+				if (final_board[small_board][i]==rtokens[Open_token]):
+					small_boards.append(small_board)
+					break
 	return small_boards
 
 def determine(final_board,small_board):
@@ -173,17 +182,21 @@ def determine(final_board,small_board):
 
 	if (len(small_boards) > 0):
 		for i in small_boards:
-			if(final_board[i]['win']!='-'):
+			if(final_board[i]['win']!=rtokens[Open_token]):
 				small_boards.remove(i)
 	print small_boards
 	if (len(small_boards)==0):
 		small_boards = choose_board(final_board)
 	best = -2
 	for small_board in small_boards:
+	        temp_dict = {}
+		for i in final_board:
+		        temp_dict.update({i:final_board[i]})
 		temp = ret_val(final_board,small_board)
 		if temp[0]>best:
 			best = temp[0]
 			my_moves = [temp[1]]
+		final_board = temp_dict
 	return my_moves[0]
 
 
@@ -194,7 +207,13 @@ def ret_val(final_board,small_board):
 	temp_dict = {}
 	for i in final_board:
 	        temp_dict.update({i:final_board[i]})
+	print 'This is the temp_dict'
+	print temp_dict
+	print 'This is the final board'
+	print final_board
 	for move in moves:
+	        if final_board[small_board][move] != rtokens[Open_token]:
+		        continue
 		if final_board[small_board][move] == rtokens[Open_token]:
 		        for i in final_board:
 			        config_win(final_board[i])
@@ -211,8 +230,8 @@ def ret_val(final_board,small_board):
 				my_moves = [(small_board,move)]
 			elif val == best_val:
 				my_moves.append((small_board, move))
-	print "My moves: ", my_moves
-	final_board = temp_dict
+          
+			final_board = temp_dict
 	return (best_val,my_moves[0])
 
 
@@ -226,6 +245,8 @@ class Player1:
 
 
 	def move(self,temp_board,temp_block,old_move,flag):
+		print 'This is the temp_board'
+		print temp_board
 		moves = (0,1,2,3,4,5,6,7,8)
 		X_token = -1
 		Open_token = 0
@@ -241,29 +262,26 @@ class Player1:
 ##
 		WINPOS = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
 		final_board={0:{},1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{}}
-
 		small_board = 0;
 		CAUSES = ('draw', 'win', 'loss')
 		i = 0
 		j = 0
-		for x in temp_board:
-			for y in x:
-				final_board[i][j] = y
-				j = j+1
-				if(j == 9):
-					config_win(final_board[i])
-			i = i+1
-			if (i == 9):
-				break
-			j = j % 9
+		for x in xrange(0,9):
+			for y in xrange(0,9):
+				m = 3*(x/3) + (y/3)
+				n = 3*(x%3) + (y%3)
+				final_board[m][n] = temp_board[x][y]
+	        for i in final_board:
+	                config_win(final_board[i])
 		print  final_board
 		print old_move
 		x = old_move[1]
 		y = old_move[0]
 		small_board = 3*(y%3) + (x%3)
 		print 'small_board'
-		print small_board
 	  	final = determine(final_board,small_board)
+		print "Last move ", old_move
+		print final_board
 	   	print "I pick ", final
 	        x = final[0]
 	        y = final[1]
@@ -272,7 +290,6 @@ class Player1:
 	   	return (row,column)
 
 class Player2:
-	
 	def __init__(self):
 		pass
 	def move(self,temp_board,temp_block,old_move,flag):
