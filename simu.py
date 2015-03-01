@@ -149,9 +149,11 @@ def valid_moves(final_board,last_move):
 		small_boards = [small_board]
  
 	if (len(small_boards) > 0):
+		temp_small_board = small_boards[:]
 		for i in small_boards:
 			if(final_board[i]['win']!=rtokens[Open_token]):
-				small_boards.remove(i)
+				temp_small_board.remove(i)
+		small_boards = temp_small_board[:]
 	if (len(small_boards)==0):
 		small_boards = choose_board(final_board)
 	valid_moves = []
@@ -170,7 +172,7 @@ def minmax(final_board,player, next_player, alpha, beta,depth,last_move):
 #		return 0
 	moves = []
 	moves = valid_moves(final_board,last_move)
-#	# print 'Moves'
+	# print 'Moves'
 	# print moves
 	if 1:
 		for move in moves:
@@ -228,7 +230,7 @@ def choose_board(final_board):   #This function will contain the intelligence fo
 	small_boards = []
 	for small_board in final_board:
 	        if (final_board[small_board]['win']==rtokens[Open_token]):
-			for i in final_board[small_board]:
+			for i in xrange(0,9):
 				if (final_board[small_board][i]==rtokens[Open_token]):
 					small_boards.append(small_board)
 					break
@@ -249,15 +251,17 @@ def determine(final_board,small_board):
 	else:
 		small_boards = [small_board]
 	# print small_boards
-	print final_board
-	print "small_boards1", small_boards
-
+	# print final_board
+	# print "small_boards1", small_boards
+	temp_small_board = small_boards[:]
 	if (len(small_boards) > 0):
 		for i in small_boards:
+			# print i, final_board[i]['win']
 			if(final_board[i]['win']!=rtokens[Open_token]):
-				small_boards.remove(i)
+				temp_small_board.remove(i)
+	small_boards = temp_small_board[:]
 	temp_list = []
-	print "small_boards2", small_boards
+	# print "small_boards2", small_boards
 
 	if (len(small_boards) > 0):
 		for small_board in small_boards:
@@ -266,7 +270,7 @@ def determine(final_board,small_board):
 					temp_list.append(small_board)
 					break
 	small_boards = temp_list
-	print "small_boards", small_boards
+	# print "small_boards", small_boards
 	if (len(small_boards)==0):
 		small_boards = choose_board(final_board)
 	best = -10000000
@@ -279,7 +283,7 @@ def determine(final_board,small_board):
 		temp = ret_val(final_board,small_board)
 		# print "SOMETEMP::", temp
 		if temp[0]>best:
-			print "TEMP..", temp[1]
+			# print "TEMP..", temp[1]
 			best = temp[0]
 			my_moves = [temp[1]]
 		final_board = temp_dict
@@ -317,13 +321,19 @@ def ret_val(final_board,small_board):
 				config_win(final_board[i])
 #			# print "NEW", final_board[small_board][move]
 #                        # print final_board
+
 			if val > best_val:
+				# print "VAL::", val
+				# print "MOVE::", move
 				best_val= val
 				my_moves = [(small_board,move)]
 			elif val == best_val:
+				# print "2VAL::", val
+				# print "2MOVE::", move
 				my_moves.append((small_board, move))
          
 			final_board = temp_dict
+	# print "LIST SIZE2:", len(my_moves)
 	return (best_val,my_moves[0])
 
 
@@ -464,7 +474,6 @@ def get_empty_out_of(gameb, blal,block_stat):
 
 	# If all the possible blocks are full, you can move anywhere
 	if cells == []:
-		print "MOVE ANYWHERE" #debug
 		for i in range(9):
 			for j in range(9):
                                 no = (i/3)*3
@@ -479,10 +488,6 @@ def check_valid_move(game_board,block_stat, current_move, old_move):
 
 	# first we need to check whether current_move is tuple of not
 	# old_move is guaranteed to be correct
-	print "CURR::"
-	print current_move
-	print "OLD::"
-	print old_move
 	if type(current_move) is not tuple:
 		return False
 	
@@ -555,7 +560,6 @@ def check_valid_move(game_board,block_stat, current_move, old_move):
         
         # We get all the empty cells in allowed blocks. If they're all full, we get all the empty cells in the entire board.
         cells = get_empty_out_of(game_board, blocks_allowed,block_stat)
-        print cells
 	#Checks if you made a valid move. 
         if current_move in cells:
      	    return True
@@ -842,9 +846,9 @@ if __name__ == '__main__':
         # However, in the tournament, each player will get a chance to go 1st. 
         num = random.uniform(0,1)
         if num > 0.5:
-		# O_token = 1
+        	print "You are P2"
 		simulate(obj2, obj1)
 	else:
-		# O_token = -1
+		print "You are P1"
 		simulate(obj1, obj2)
 
